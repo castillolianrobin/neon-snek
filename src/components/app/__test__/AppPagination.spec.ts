@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { AppPagination } from '../';
+import AppPagination from '../AppPagination.vue';
 const name = 'AppPagination';
 
 
@@ -14,7 +14,7 @@ describe(name, ()=>{
       props: { 
         length, 
         modelValue,
-        'onUpdate:modelValue': (e: any) => wrapperPrevious.setProps({ modelValue: e }) 
+        'onUpdate:modelValue': (e: number) => { wrapperPrevious.setProps({ modelValue: e }) } 
       },
     });
     const pagesBtn = wrapperPrevious.findAll('button');
@@ -47,7 +47,7 @@ describe(name, ()=>{
         length, 
         modelValue,
         pageVisible,
-        'onUpdate:modelValue': (e: any) => wrapperPrevious.setProps({ modelValue: e }) 
+        'onUpdate:modelValue': (e: any) => { wrapperPrevious.setProps({ modelValue: e }) } 
       },
     });
     const pagesBtn = wrapperPrevious.findAll('button');
@@ -79,7 +79,7 @@ describe(name, ()=>{
         length, 
         modelValue,
         pageVisible,
-        'onUpdate:modelValue': (e: any) => wrapperPrevious.setProps({ modelValue: e }) 
+        'onUpdate:modelValue': (e: any) => { wrapperPrevious.setProps({ modelValue: e }) }
       },
     });
     const pagesBtn = wrapperPrevious.findAll('button');
@@ -111,7 +111,7 @@ describe(name, ()=>{
         length, 
         modelValue,
         pageVisible,
-        'onUpdate:modelValue': (e: any) => wrapperPrevious.setProps({ modelValue: e }) 
+        'onUpdate:modelValue': (e: any) => { wrapperPrevious.setProps({ modelValue: e }) }
       },
     });
     const pagesBtn = wrapperPrevious.findAll('button');
@@ -142,7 +142,7 @@ describe(name, ()=>{
         length,
         pageVisible, 
         modelValue: initialValue,
-        'onUpdate:modelValue': (e: any) => pageWrapper.setProps({ modelValue: e }) 
+        'onUpdate:modelValue': (e: any) => { pageWrapper.setProps({ modelValue: e }) } 
       },
     })
 

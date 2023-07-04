@@ -3,7 +3,6 @@ import { computed, ref, toRef, type PropType } from 'vue';
 import { AppButton } from '.';
 import type { VariantProp } from './AppButton.vue';
 import { createThemedColor, themedColorProps } from '@/composables';
-import { vOnClickOutside } from '@vueuse/components';
 
 export type DropProp = 'down'|'up'|'left'|'right';
 export interface ItemProp { text: string; onClick?: ()=>void; }

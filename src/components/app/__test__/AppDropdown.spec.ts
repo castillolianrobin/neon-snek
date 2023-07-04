@@ -1,7 +1,7 @@
 import { defaultSlotTest, namedSlotTest } from '@/components/__tests__/helpers/slot.spec';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import { AppDropdown, AppButton } from '../';
+import { AppDropdown } from '../';
 const name = 'AppDropdown';
 
 describe(name, ()=>{
@@ -11,6 +11,7 @@ describe(name, ()=>{
     
     const wrapper = mount(AppDropdown, {
       slots: {
+        default(_) {},
         trigger: `
           <template #trigger="{ props }">
             <button id="trigger" v-bind="{ ...props }">

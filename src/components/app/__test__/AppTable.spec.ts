@@ -129,7 +129,7 @@ describe(name, ()=>{
         { text: 'Header 3', key: 'header_3'},
         { text: 'Header 4', key: 'header_4', subKey: 'subType1'},
       ];
-      const items: Record<string, any>  = [
+      const items: Record<string, any>[]  = [
         { 
           header_1: 'content 1', 
           header_2: 'content 2', 
