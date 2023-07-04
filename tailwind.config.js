@@ -45,8 +45,14 @@ module.exports = {
           '50%': { transform: 'translateX(1%)' },
         }
       },
+      dropShadow: {
+        'glow': '0 0 6px rgba(250, 200, 100, 1)',
+      },
       animation: {
         'modal': 'shake 0.3s linear 1',
+      },
+      fontFamily: {
+        sans: ['Sacramento'],
       }
     },
   },
