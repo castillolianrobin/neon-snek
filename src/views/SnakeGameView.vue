@@ -46,7 +46,7 @@ type Directions = 'l' | 'r' | 'b' | 't';
   
 const snakeDirection = ref<Directions>('r');
 
-const moveId = ref<NodeJS.Timer | null>(null);
+const moveId = ref<ReturnType<typeof setInterval> | null>(null);
 
 
 function moveSnek() {
