@@ -7,12 +7,6 @@ import { executeMiddlewares } from '@/middlewares';
 // Extra Routes
 // import dashboardRoutes from './dashboardRoutes';
 import componentRoutes from './componentRoutes';
-// Modules
-import userRoutes from '@/modules/User/user.routes';
-import authRoutes from '@/modules/Auth/auth.routes';
-import dashboardRoutes from '@/modules/Dashboard/dashboard.routes';
-import productRoutes from '@/modules/Product/product.routes';
-import ordersRoutes from '@/modules/Orders/orders.routes';
 import { usePageLoadStore } from '@/stores/pageLoadStore';
 
 const router = createRouter({
@@ -20,46 +14,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: HomeViewVue  ,
-      meta: { layout: 'Default' },
-    },
-    {
-      path: '/play',
       component: import('@/views/SnakeGameView.vue')  ,
       meta: { layout: 'Default' },
     },
-    ...authRoutes,
-
-    // Dashboard Routes
-    {
-      path: '/dashboard',
-      component: RouterView,
-      meta: { 
-        layout: 'Dashboard', 
-        // middleware: [ authentication ] 
-      },
-      children: [
-        ...dashboardRoutes,
-        ...userRoutes,
-        ...productRoutes,
-        ...ordersRoutes,
-        // ...dashboardRoutes,
-      ],
-    },
 
     // Component Kit Routes
-    {
-      path: '/_component',
-      component: LayoutDefault,
-      children: [
-        ...componentRoutes.map((route)=>({
-          path: route.path.substring(1),
-          name: route.name,
-          component: route.component,
-          meta: { ...route.meta, layout: 'ComponentDashboard' },
-        })),
-      ],
-    },
+    // {
+    //   path: '/_component',
+    //   component: LayoutDefault,
+    //   children: [
+    //     ...componentRoutes.map((route)=>({
+    //       path: route.path.substring(1),
+    //       name: route.name,
+    //       component: route.component,
+    //       meta: { ...route.meta, layout: 'ComponentDashboard' },
+    //     })),
+    //   ],
+    // },
   ]
 });
 
