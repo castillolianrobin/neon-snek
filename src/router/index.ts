@@ -13,7 +13,6 @@ import authRoutes from '@/modules/Auth/auth.routes';
 import dashboardRoutes from '@/modules/Dashboard/dashboard.routes';
 import productRoutes from '@/modules/Product/product.routes';
 import ordersRoutes from '@/modules/Orders/orders.routes';
-import postRoutes from '@/modules/Posts/post.routes';
 import { usePageLoadStore } from '@/stores/pageLoadStore';
 
 const router = createRouter({
@@ -28,12 +27,6 @@ const router = createRouter({
       path: '/play',
       component: import('@/views/SnakeGameView.vue')  ,
       meta: { layout: 'Default' },
-    },
-    {
-      path: '/',
-      children: [
-        ...postRoutes,  
-      ]
     },
     ...authRoutes,
 
