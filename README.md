@@ -2,7 +2,7 @@
 
 
 
->### [<img width="20" src="https://www.netlify.com/v3/img/components/logomark-dark.png" alt="Netlify logo"> Demo ](https://component-kits-vue3.netlify.app/login)
+>### [<img width="20" src="https://www.netlify.com/v3/img/components/logomark-dark.png" alt="Netlify logo"> Demo ](https://sprightly-cactus-9d0ece.netlify.app/)
 <br> 
 
 Basic implementation of classic snake game. The logic is not a clone of other code so the code is currently messy. MVP hasn't been reached yet.
