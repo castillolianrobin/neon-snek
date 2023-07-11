@@ -94,7 +94,7 @@ function isMovingSameBound(direction: Directions) {
   }
 }
 
-const { vibrate, stop} = useVibrate({ pattern: [300, 100, 300] })
+const { vibrate, stop} = useVibrate({ pattern: [100] })
 function changeDirection(direction: Directions) {
   if (isMovingSameBound(direction)) return;
   
