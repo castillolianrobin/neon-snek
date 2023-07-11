@@ -294,7 +294,7 @@ pauseGame(true);
             text-center
           "  
         >
-          <p class="bg-zinc-900 p-1">Controls: <span class="ml-1 text-sm">Use Arrow Keys/ WASD to Control the snake</span></p>
+          <p class="bg-zinc-900 p-1 hidden md:block">Controls: <span class="ml-1 text-sm">Use Arrow Keys/ WASD to Control the snake</span></p>
           <button>
             <span class="md:hidden">Tap</span>
             <span class="hidden md:inline">Click</span>
@@ -380,7 +380,13 @@ pauseGame(true);
       </div>
       <!-- Mobile Controls -->
       <div class="my-auto w-full md:sr-only flex justify-center">
-        <div class="w-1/2 aspect-square gap-2  grid grid-cols-3 grid-rows-3 border border-white/25 rounded-full">
+        <div class="
+          w-2/3 
+          aspect-square
+          grid grid-cols-3 grid-rows-3 gap-5  
+          border border-white/25 rounded-full
+          "
+        >
           <!-- Arrow buttons -->
           <button 
             v-for="arrCtrl in arrowControls"
@@ -388,7 +394,7 @@ pauseGame(true);
             v-html="arrCtrl.htmlCode"
             :class="arrCtrl.class"
             class="
-              border-4 border-green-200 rounded-lg 
+              border-4 border-green-200 rounded-xl 
               flex items-center justify-center 
               text-green-200
               active:bg-red-500
