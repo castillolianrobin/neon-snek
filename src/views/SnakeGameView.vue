@@ -65,6 +65,7 @@ function moveSnake() {
   let newSnakeHead = { x: 0, y: 0, ...[...snake.value].pop() };
   if (snakeDirectionNew.value !== null) {
     snakeDirection.value = snakeDirectionNew.value;
+    snakeDirectionNew.value = null;
   }
   // Moving X
   if (X_AXIS.includes(snakeDirection.value)) {
@@ -260,7 +261,7 @@ pauseGame(true);
           Snake Game
         </h3>
         <p class="text-white text-sm">
-          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
+          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span> {{ moveSpeed }}
         </p>
         <AppButton v-if="false" variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
           {{ snakeMovement.isActive.value ? 'Pause' : 'Start' }}
