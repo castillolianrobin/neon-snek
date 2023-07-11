@@ -235,11 +235,12 @@ pauseGame(true);
     <div 
       tabindex="0"
       class="
-        h-full  w-full 
+        select-none
+        outline-none
+        h-full w-full 
         flex flex-col items-center justify-center gap-5
       " 
       @focus="boundsFocused = true, pauseGame(false)"
-      @blur="boundsFocused = false, pauseGame(true)"
       @keydown="onKeypressHandler"
     > 
       
