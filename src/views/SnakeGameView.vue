@@ -1,7 +1,7 @@
 
 <script setup lang="ts">
 import { AppButton } from '@/components/app';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useIntervalFn, useVibrate  } from '@vueuse/core'
 
 
@@ -67,34 +67,37 @@ function moveSnake() {
     snakeDirection.value = snakeDirectionNew.value;
     snakeDirectionNew.value = null;
   }
-  // Moving X
-  if (X_AXIS.includes(snakeDirection.value)) {
-    newSnakeHead.x = snakeDirection.value == 'l'
-      ? (newSnakeHead.x || (X_BOUNDS + 1)) - 1
-      : (newSnakeHead.x === X_BOUNDS ? 0 : newSnakeHead.x) + 1;
-  } 
-  // Moving Y
-  else if (Y_AXIS.includes(snakeDirection.value)) {
-    newSnakeHead.y = snakeDirection.value === 't'
-      ? (newSnakeHead.y || (Y_BOUNDS + 1)) - 1
-      : (newSnakeHead.y === Y_BOUNDS ? 0 : newSnakeHead.y) + 1;
-  } 
-  // Moving Wrong
-  else {
-    console.log('Moving Incorrectly');
-  }
-  
-  // Eat Self
-  if (snake.value.some(({ x, y})=>newSnakeHead.x === x && newSnakeHead.y === y)) {
-    isSnakeDead.value = true;
-    pauseGame(true);
-  }
-  // Eat Food
-  const hasFood = eatFood(newSnakeHead);
-  if (!hasFood) {
-    snake.value.shift();
-  }
-  snake.value.push(newSnakeHead);
+
+  nextTick(()=>{
+    // Moving X
+    if (X_AXIS.includes(snakeDirection.value)) {
+      newSnakeHead.x =  snakeDirection.value == 'l'
+        ? (newSnakeHead.x || (X_BOUNDS)) - 1
+        : (newSnakeHead.x === (X_BOUNDS - 1) ? 0 : newSnakeHead.x + 1) ;
+    } 
+    // Moving Y
+    else if (Y_AXIS.includes(snakeDirection.value)) {
+      newSnakeHead.y = snakeDirection.value === 't'
+        ? (newSnakeHead.y || (Y_BOUNDS)) - 1
+        : (newSnakeHead.y === (Y_BOUNDS - 1) ? 0 : newSnakeHead.y + 1);
+    } 
+    // Moving Wrong
+    else {
+      console.log('Moving Incorrectly');
+    }
+    
+    // Eat Self
+    if (snake.value.some(({ x, y})=>newSnakeHead.x === x && newSnakeHead.y === y)) {
+      isSnakeDead.value = true;
+      pauseGame(true);
+    }
+    // Eat Food
+    const hasFood = eatFood(newSnakeHead);
+    if (!hasFood) {
+      snake.value.shift();
+    }
+    snake.value.push(newSnakeHead);
+  })
 } 
 
 const snakeMovement = useIntervalFn(moveSnake, moveSpeed)
@@ -261,7 +264,7 @@ pauseGame(true);
           Snake Game
         </h3>
         <p class="text-white text-sm">
-          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span> {{ moveSpeed }}
+          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
         </p>
         <AppButton v-if="false" variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
           {{ snakeMovement.isActive.value ? 'Pause' : 'Start' }}
@@ -336,11 +339,11 @@ pauseGame(true);
         <table class="h-full w-full text-white">
           <tbody>
             <tr
-              v-for="yLength in Y_BOUNDS"
+              v-for="(_, yLength) in Y_BOUNDS"
               :key="yLength + 'y'"
             >
               <td
-                v-for="xLength in X_BOUNDS"
+                v-for="(_, xLength) in X_BOUNDS"
                 :key="xLength + 'x'" 
                 class="aspect-square md:p-0.5 border border-gray-500/5"
               >
