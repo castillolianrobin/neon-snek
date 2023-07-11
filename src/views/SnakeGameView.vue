@@ -53,7 +53,13 @@ const snakeDirectionNew = ref<Directions | null>(null);
 const snakeDirection = ref<Directions>(INITIAL_SNEK_DIRECTION);
 
 
-const moveSpeed = computed(()=>200/Math.floor((snake.value.length)/3));
+function getMultiplier(value: number, division: number) {
+  const totalScore = X_BOUNDS*Y_BOUNDS;
+  // const level = totalScore/division;
+  const levelMultiplier = Math.floor((value/totalScore)*100);
+  return Math.ceil(division*(levelMultiplier/100));
+}
+const moveSpeed = computed(()=>200/getMultiplier(snake.value.length, 3));
 
 function moveSnake() {
   let newSnakeHead = { x: 0, y: 0, ...[...snake.value].pop() };
@@ -200,8 +206,8 @@ function spawnFood() {
 
   food.value.push(newFood);
 }
-
-const foodSpawning = useIntervalFn(spawnFood, 3000);
+const foodSpeed = computed(()=>2000/getMultiplier(snake.value.length, 5))
+const foodSpawning = useIntervalFn(spawnFood, foodSpeed);
 
 
 /** Food Helper */
@@ -254,7 +260,7 @@ pauseGame(true);
           Snake Game
         </h3>
         <p class="text-white text-sm">
-          Score: {{ score }}
+          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
         </p>
         <AppButton v-if="false" variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
           {{ snakeMovement.isActive.value ? 'Pause' : 'Start' }}
@@ -264,6 +270,7 @@ pauseGame(true);
       <!-- Snake Area -->
       <div 
         class="
+          p-1
           aspect-square 
           relative
           cursor-pointer
@@ -308,8 +315,7 @@ pauseGame(true);
         class="
           absolute top-0 left-0 
           backdrop-blur-lg 
-          z-50 h-full 
-          w-full flex 
+          z-50 h-full w-full flex 
           flex-col 
           items-center 
           justify-center gap-3
