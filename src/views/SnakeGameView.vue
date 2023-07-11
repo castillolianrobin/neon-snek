@@ -3,6 +3,8 @@
 import { AppButton } from '@/components/app';
 import { ref, computed } from 'vue';
 import { useIntervalFn, useVibrate  } from '@vueuse/core'
+
+
 /** GAME SETTINGS */
 
 const X_BOUNDS = 15;
@@ -19,11 +21,12 @@ const INITIAL_SNEK_DIRECTION: Directions = 'r';
 
 
 function resetGame() {
+  score.value = 0;
   food.value = [];
   snake.value = [...INITIAL_SNEK];
   snakeDirection.value = INITIAL_SNEK_DIRECTION;
   isSnakeDead.value = false;
-  pauseGame(false);
+  pauseGame(true);
 }
 
 function pauseGame(pause = !snakeMovement.isActive.value) {
@@ -33,26 +36,29 @@ function pauseGame(pause = !snakeMovement.isActive.value) {
   } else {
     snakeMovement.resume()
     foodSpawning.resume()
-    // moveSnek()
   }
 }
 
 
 /** Snake Logic */
 
+const boundsFocused = ref(false);
 const snake = ref([...INITIAL_SNEK]);
 const isSnakeDead = ref(false);
 
 type Directions = 'l' | 'r' | 'b' | 't';
   
+const snakeDirectionNew = ref<Directions | null>(null);
 const snakeDirection = ref<Directions>(INITIAL_SNEK_DIRECTION);
 
 
 const moveSpeed = computed(()=>200/Math.floor((snake.value.length)/3));
 
-const snakeMovement = useIntervalFn(()=>{
+function moveSnake() {
   let newSnakeHead = { x: 0, y: 0, ...[...snake.value].pop() };
-  
+  if (snakeDirectionNew.value !== null) {
+    snakeDirection.value = snakeDirectionNew.value;
+  }
   // Moving X
   if (X_AXIS.includes(snakeDirection.value)) {
     newSnakeHead.x = snakeDirection.value == 'l'
@@ -81,7 +87,9 @@ const snakeMovement = useIntervalFn(()=>{
     snake.value.shift();
   }
   snake.value.push(newSnakeHead);
-}, moveSpeed)
+} 
+
+const snakeMovement = useIntervalFn(moveSnake, moveSpeed)
 
 
 function isMovingSameBound(direction: Directions) {
@@ -94,23 +102,23 @@ function isMovingSameBound(direction: Directions) {
   }
 }
 
-const { vibrate, stop} = useVibrate({ pattern: [100] })
+const { vibrate: keypressVibrate } = useVibrate({ pattern: [ 50 ] })
 function changeDirection(direction: Directions) {
   if (isMovingSameBound(direction)) return;
   
-  vibrate();
-  snakeDirection.value = direction;
+  keypressVibrate();
+  snakeDirectionNew.value = direction;
 }
 
 function onKeypressHandler(e: KeyboardEvent) {
   switch(e.key) {
-    case 'ArrowRight':
+    case 'ArrowRight': case 'D': case 'd':
       return changeDirection('r');
-    case 'ArrowLeft':
+    case 'ArrowLeft': case 'A': case 'a':
       return changeDirection('l');
-    case 'ArrowUp':
+    case 'ArrowUp': case 'W': case 'w':
       return changeDirection('t');
-    case 'ArrowDown':
+    case 'ArrowDown': case 'S': case 's':
       return changeDirection('b');
   }
 }
@@ -167,13 +175,16 @@ function isSnakeHead(x: number, y: number) {
 const food = ref([
   { x: 10, y: 10}
 ])
+const score = ref(0);
 
+const { vibrate: eatVibrate } = useVibrate({ pattern: [ 100 ] })
 function eatFood(coords: { x: number, y: number }) {
   const foodI = [...food.value].findIndex(({ x, y })=>x === coords.x && y === coords.y)
   if (typeof foodI !== 'number' || foodI < 0) return false;
   
   food.value.splice(foodI, 1);
-
+  score.value += 1;
+  eatVibrate();
   return true;
 }
 
@@ -202,6 +213,9 @@ function isEmpty(x: number, y: number) {
   return !isFood(x, y) && !isSnakeBody(x, y) && !isSnakeHead(x, y) 
 }
 
+
+
+pauseGame(true);
 </script>
 
 <template>
@@ -209,38 +223,84 @@ function isEmpty(x: number, y: number) {
     class="
       p-5 md:px-20 md:py-12 
       h-full 
-      flex flex-col gap-5
+      flex flex-col gap-5 items-center justify-center 
       bg-zinc-800
       overflow-auto
       bg-blend-overlay
       bg-[url('https://preview.redd.it/imkv74m4q5g41.png?auto=webp&s=81c7eeea375a30ad48a907c2ac913e0395f5cc5a')]
     "
   >
-    <!-- Header -->
-    <div class="flex justify-center gap-5 ">
-      <h3 
-        class="text-center text-3xl text-primary-200  drop-shadow-[]" 
-        style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
-      >
-        Snake Game
-      </h3>
-      <AppButton variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
-        {{ snakeMovement.isActive.value ? 'Start' : 'Pause' }}
-      </AppButton>
-    </div>
     
     <!-- Snake Bounds -->
     <div 
       class="
-        relative 
-        select-none 
-        h-full w-full 
+        h-full 
         flex flex-col items-center justify-center gap-5
       " 
       @keydown="onKeypressHandler"
-
     > 
-      <!-- Game Over -->
+      
+      <!-- Header -->
+      <div class="w-full flex items-center justify-between gap-5">
+        <h3 
+          class="text-center text-3xl text-primary-200  drop-shadow-[]" 
+          style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
+        >
+          Snake Game
+        </h3>
+        <p class="text-white text-sm">
+          Score: {{ score }}
+        </p>
+        <AppButton v-if="false" variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
+          {{ snakeMovement.isActive.value ? 'Pause' : 'Start' }}
+        </AppButton>
+      </div>
+
+      <!-- Snake Area -->
+      <div 
+        tabindex="0"
+        class="
+          aspect-square 
+          relative
+          cursor-pointer
+          w-full md:w-fit md:h-full
+          border-2
+          border-primary-300 
+          shadow-green-500 
+          bg-indigo-900
+          bg-blend-difference
+          bg-[url('https://preview.redd.it/imkv74m4q5g41.png?auto=webp&s=81c7eeea375a30ad48a907c2ac913e0395f5cc5a')]
+        "
+        style="
+          box-shadow: 0px 0px 20px red, inset   0px 0px 10px red;
+        "
+        @focus="boundsFocused = true, pauseGame(false)"
+        @blur="boundsFocused = false, pauseGame(true)"
+      > 
+        <!-- Game Starter -->
+        <div
+          v-if="!boundsFocused" 
+          class="
+            absolute top-0 left-0 
+            backdrop-blur 
+            z-50 h-full 
+            w-full flex 
+            flex-col 
+            items-center 
+            justify-center gap-3
+            text-white
+            text-center
+          "  
+        >
+          <p class="bg-zinc-900 p-1">Controls: <span class="ml-1 text-sm">Use Arrow Keys/ WASD to Control the snake</span></p>
+          <button>
+            <span class="md:hidden">Tap</span>
+            <span class="hidden md:inline">Click</span>
+            here To start 
+          </button>
+        </div>
+
+        <!-- Game Over -->
       <div 
         v-if="isSnakeDead" 
         class="
@@ -263,26 +323,9 @@ function isEmpty(x: number, y: number) {
         <AppButton  @click="resetGame">Play Again</AppButton>
       </div>
 
-      <!-- Snake Area -->
-      <div 
-        tabindex="0"
-        class="
-          aspect-square
-          cursor-pointer
-          w-full md:w-fit md:h-full 
-          border-2
-          border-primary-300 
-          shadow-green-500 
-          bg-indigo-900
-          bg-blend-difference
-          bg-[url('https://preview.redd.it/imkv74m4q5g41.png?auto=webp&s=81c7eeea375a30ad48a907c2ac913e0395f5cc5a')]
-        "
-        style="
-          box-shadow: 0px 0px 20px red, inset   0px 0px 10px red;
-        "
-      >
-        <table class="w-full text-white">
-          <tbody class="">
+        <!-- Snake Area -->
+        <table class="h-full w-full text-white">
+          <tbody>
             <tr
               v-for="yLength in Y_BOUNDS"
               :key="yLength + 'y'"
