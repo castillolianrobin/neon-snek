@@ -27,6 +27,7 @@ function resetGame() {
   snakeDirection.value = INITIAL_SNEK_DIRECTION;
   isSnakeDead.value = false;
   pauseGame(true);
+  boundsFocused.value = false;
 }
 
 function pauseGame(pause = !snakeMovement.isActive.value) {
