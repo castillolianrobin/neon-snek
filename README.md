@@ -10,14 +10,9 @@ Basic implementation of classic snake game. The logic is not a clone of other co
 
 <br>
 
-The following updates will be in the next push
-- Fix: Game not working upon pressing play again
-- Fix: Quick movement cause the game over
-- Fix: Pause doesnt stop snake food from spawning
-- Update: Home screen with main menu
-- Update: Mobile responsiveness from phone device
-- Feature: Mobile screen control
 
+The following updates will be in the next push
+- Feat: Highschore
 
 
 <br>
