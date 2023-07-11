@@ -233,15 +233,18 @@ pauseGame(true);
     
     <!-- Snake Bounds -->
     <div 
+      tabindex="0"
       class="
-        h-full 
+        h-full  w-full 
         flex flex-col items-center justify-center gap-5
       " 
+      @focus="boundsFocused = true, pauseGame(false)"
+      @blur="boundsFocused = false, pauseGame(true)"
       @keydown="onKeypressHandler"
     > 
       
       <!-- Header -->
-      <div class="w-full flex items-center justify-between gap-5">
+      <div class="w-full flex items-center justify-center gap-10">
         <h3 
           class="text-center text-3xl text-primary-200  drop-shadow-[]" 
           style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
@@ -258,7 +261,6 @@ pauseGame(true);
 
       <!-- Snake Area -->
       <div 
-        tabindex="0"
         class="
           aspect-square 
           relative
@@ -274,8 +276,6 @@ pauseGame(true);
         style="
           box-shadow: 0px 0px 20px red, inset   0px 0px 10px red;
         "
-        @focus="boundsFocused = true, pauseGame(false)"
-        @blur="boundsFocused = false, pauseGame(true)"
       > 
         <!-- Game Starter -->
         <div
