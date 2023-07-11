@@ -48,7 +48,7 @@ type Directions = 'l' | 'r' | 'b' | 't';
 const snakeDirection = ref<Directions>(INITIAL_SNEK_DIRECTION);
 
 
-const moveSpeed = computed(()=>200/(snake.value.length/4));
+const moveSpeed = computed(()=>200/Math.floor((snake.value.length)/3));
 
 const snakeMovement = useIntervalFn(()=>{
   let newSnakeHead = { x: 0, y: 0, ...[...snake.value].pop() };
@@ -148,14 +148,15 @@ const arrowControls = [
 
 /** Snake Helper */
 
-function isSnakeBody(coord: { x: number, y: number}) {
-  return snake.value.some(({x, y})=>x === coord.x && y === coord.y)
+function isSnakeBody(x: number, y: number) {
+  return snake.value.some((coord)=>x === coord.x && y === coord.y)
 }
 
-function isSnakeHead(coord: { x: number, y: number}) {
+function isSnakeHead(x: number, y: number) {
   const snakeHeadCoord = [...snake.value].pop();
-  return snakeHeadCoord?.x === coord.x && snakeHeadCoord.y === coord.y;
+  return snakeHeadCoord?.x === x && snakeHeadCoord.y === y;
 }
+
 
 
 /** Eating Logic */
@@ -190,8 +191,12 @@ const foodSpawning = useIntervalFn(spawnFood, 3000);
 
 /** Food Helper */
 
-function isFood(coord: { x: number, y: number}) {
-  return food.value.some(({x, y})=>x === coord.x && y === coord.y)
+function isFood(x: number, y: number) {
+  return food.value.some((coord)=>x === coord.x && y === coord.y)
+}
+
+function isEmpty(x: number, y: number) {
+  return !isFood(x, y) && !isSnakeBody(x, y) && !isSnakeHead(x, y) 
 }
 
 </script>
@@ -202,7 +207,7 @@ function isFood(coord: { x: number, y: number}) {
       p-5 md:px-20 md:py-12 
       h-full 
       flex flex-col gap-5
-      bg-zinc-900
+      bg-zinc-800
       overflow-auto
       bg-blend-overlay
       bg-[url('https://preview.redd.it/imkv74m4q5g41.png?auto=webp&s=81c7eeea375a30ad48a907c2ac913e0395f5cc5a')]
@@ -211,7 +216,7 @@ function isFood(coord: { x: number, y: number}) {
     <!-- Header -->
     <div class="flex justify-center gap-5 ">
       <h3 
-        class="text-center text-3xl text-pink-200  drop-shadow-[]" 
+        class="text-center text-3xl text-primary-200  drop-shadow-[]" 
         style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
       >
         Snake Game
@@ -262,9 +267,8 @@ function isFood(coord: { x: number, y: number}) {
           aspect-square
           cursor-pointer
           w-full md:w-fit md:h-full 
-      
           border-2
-          border-pink-500 
+          border-primary-300 
           shadow-green-500 
           bg-indigo-900
           bg-blend-difference
@@ -283,29 +287,32 @@ function isFood(coord: { x: number, y: number}) {
               <td
                 v-for="xLength in X_BOUNDS"
                 :key="xLength + 'x'" 
-                class="aspect-square md:p-0.5"
+                class="aspect-square md:p-0.5 border border-gray-500/5"
               >
-                <div 
-                  class="relative w-full aspect-square border-2 md:border-4 border-white/0"
+                <div
+                  class="relative w-full aspect-square border-2 md:border-4"
                   :class="{
-                    'bg-green-700 border-green-200 md:rounded': isFood({ x: xLength, y: yLength }),
-                    'border-pink-300 rounded md:rounded-lg': isSnakeBody({ x: xLength, y: yLength }),
-                    'border-yellow-300': isSnakeHead({ x: xLength, y: yLength }),
-                    'rounded-r-xl md:rounded-r-2xl': isSnakeHead({ x: xLength, y: yLength }) && snakeDirection === 'r',
-                    'rounded-t-xl md:rounded-t-2xl': isSnakeHead({ x: xLength, y: yLength }) && snakeDirection === 't',
-                    'rounded-b-xl md:rounded-b-2xl': isSnakeHead({ x: xLength, y: yLength }) && snakeDirection === 'b',
-                    'rounded-l-xl md:rounded-l-2xl': isSnakeHead({ x: xLength, y: yLength }) && snakeDirection === 'l',
+                    'border-transparent': isEmpty(xLength, yLength),
+                    'bg-pink-700 border-primary-300 md:rounded': isFood(xLength, yLength),
+                    'border-green-400 rounded md:rounded-lg': isSnakeBody(xLength, yLength) && !isSnakeHead(xLength, yLength),
+                    'border-yellow-300': isSnakeHead(xLength, yLength),
+                    'rounded-r-xl md:rounded-r-2xl': isSnakeHead(xLength, yLength) && snakeDirection === 'r',
+                    'rounded-t-xl md:rounded-t-2xl': isSnakeHead(xLength, yLength) && snakeDirection === 't',
+                    'rounded-b-xl md:rounded-b-2xl': isSnakeHead(xLength, yLength) && snakeDirection === 'b',
+                    'rounded-l-xl md:rounded-l-2xl': isSnakeHead(xLength, yLength) && snakeDirection === 'l',
                   }"
                   :style="
-                    isSnakeBody({ x: xLength, y: yLength }) 
-                      ? 'box-shadow: 0px 0px 15px red, inset 0px 0px 15px red;' 
-                      : isFood({ x: xLength, y: yLength }) 
-                        ? 'box-shadow: 0px 0px 30px green;'
-                        : ''"  
+                    isSnakeHead(xLength, yLength)
+                      ? 'box-shadow: 0px 0px 10px yellow, inset 0px 0px 10px yellow;' 
+                      : isSnakeBody(xLength, yLength) 
+                        ? 'box-shadow: 0px 0px 15px green, inset 0px 0px 15px green;' 
+                        : isFood(xLength, yLength) 
+                          ? 'box-shadow: 0px 0px 30px red;'
+                          : ''"  
                 >
                   <!-- Snake Eyes -->
                   <div 
-                    v-if="isSnakeHead({ x: xLength, y: yLength })" 
+                    v-if="isSnakeHead(xLength, yLength)" 
                     class="
                       flex items-center justify-center 
                       text-yellow-400 text-2xl font-extrabold 

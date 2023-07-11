@@ -7,9 +7,7 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "./node_modules/vue-tailwind-datepicker/**/*.js",
   ],
-  darkMode: 'class',
   safelist: [
     {
       pattern: /(bg|text|border|outline|fill)-(primary|secondary|success|error|warning)-(200|500)/,
@@ -23,15 +21,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: colors.emerald,
+        primary: colors.pink,
         secondary: colors.zinc,
         info: colors.blue,
         alert: colors.orange,
         error: colors.red,
         success: colors.green,
-        // Date Picker colors
-        "vtd-primary": colors.emerald,
-        "vtd-secondary": colors.zinc,
       },
       gridTemplateColumns: {
         dashboard: "auto 1fr",
