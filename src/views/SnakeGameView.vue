@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { AppButton } from '@/components/app';
 import { ref, computed } from 'vue';
-import { useIntervalFn } from '@vueuse/core'
+import { useIntervalFn, useVibrate  } from '@vueuse/core'
 /** GAME SETTINGS */
 
 const X_BOUNDS = 15;
@@ -94,9 +94,12 @@ function isMovingSameBound(direction: Directions) {
   }
 }
 
+const { vibrate, stop} = useVibrate({ pattern: [300, 100, 300] })
 function changeDirection(direction: Directions) {
   if (isMovingSameBound(direction)) return;
-  else snakeDirection.value = direction;
+  
+  vibrate();
+  snakeDirection.value = direction;
 }
 
 function onKeypressHandler(e: KeyboardEvent) {
