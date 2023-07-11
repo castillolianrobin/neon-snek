@@ -52,7 +52,7 @@ module.exports = {
         'modal': 'shake 0.3s linear 1',
       },
       fontFamily: {
-        sans: ['Sacramento'],
+        sans: ['Poppins']
       }
     },
   },
