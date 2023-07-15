@@ -356,7 +356,7 @@ async function saveScore(errors: string[]) {
                   class="grid grid-cols-2 gap-3"
                 >
                   <div class="text-primary-500 font-bold">{{ score.alias }}</div>
-                  <div>{{ score.score }}</div>
+                  <div class="text-secondary-900 dark:text-secondary-50">{{ score.score }}</div>
                 </div>
               </div>
             </div>
