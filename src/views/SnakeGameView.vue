@@ -332,7 +332,7 @@ async function saveScore(errors: string[]) {
         </h3>
         <div class="text-white text-sm flex flex-col md:flex-row items-center gap-2 gap-x-6">
           <p>
-            Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
+            Current Score: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
           </p>
           <AppModal @update:active="$event && fetchScores()" close-icon>
             <template #trigger="{ toggleModal }">
@@ -447,7 +447,7 @@ async function saveScore(errors: string[]) {
             <AppForm v-else @validate="saveScore">
               <p class="text-lg text-white font-bold text-center">
                 <span>Score: </span> 
-                <span>{{  snake.length  }}</span>
+                <span>{{  score  }}</span>
               </p>
               <!-- Alias Input -->
               <AppFormInput 
