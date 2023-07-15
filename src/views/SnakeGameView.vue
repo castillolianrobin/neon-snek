@@ -337,7 +337,7 @@ async function saveScore(errors: string[]) {
           <AppModal @update:active="$event && fetchScores()" close-icon>
             <template #trigger="{ toggleModal }">
               <AppButton size="sm" @click="toggleModal">
-                View Scores
+                View Highscores
               </AppButton>
             </template>
             
