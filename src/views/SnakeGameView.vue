@@ -453,7 +453,8 @@ async function saveScore(errors: string[]) {
               <AppFormInput 
                 v-model="alias"
                 :disabled="scoreLoading"
-                label="Alias" 
+                label="Alias"
+                color="primary-200" 
                 placeholder="Enter Alias Here"
                 validations="required | maxLength(5)"
                 class="w-full"
