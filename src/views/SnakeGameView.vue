@@ -1,9 +1,13 @@
 
 <script setup lang="ts">
-import { AppButton } from '@/components/app';
 import { ref, computed, nextTick } from 'vue';
+// Plugins
 import { useIntervalFn, useVibrate  } from '@vueuse/core'
-
+// Components
+import { AppButton, AppForm, AppFormInput, AppLoading, AppModal, AppPagination } from '@/components/app';
+// Services
+import { Scores, type SnakeScore } from '@/services'
+import type { TableResponse } from '@/services/types';
 
 /** GAME SETTINGS */
 
@@ -28,6 +32,7 @@ function resetGame() {
   isSnakeDead.value = false;
   pauseGame(true);
   boundsFocused.value = false;
+  scoreSaved.value = false;
 }
 
 function pauseGame(pause = !snakeMovement.isActive.value) {
@@ -59,7 +64,7 @@ function getMultiplier(value: number, division: number) {
   const levelMultiplier = Math.floor((value/totalScore)*100);
   return Math.ceil(division*(levelMultiplier/100));
 }
-const moveSpeed = computed(()=>200/getMultiplier(snake.value.length, 3));
+const moveSpeed = computed(()=>200/getMultiplier(snake.value.length, 2));
 
 function moveSnake() {
   let newSnakeHead = { x: 0, y: 0, ...[...snake.value].pop() };
@@ -227,6 +232,68 @@ function isEmpty(x: number, y: number) {
 
 
 pauseGame(true);
+
+
+
+/** High Score Logic */
+
+const scoresData = ref<TableResponse<SnakeScore>>({
+  current_page: 1,
+  total: 1,
+  from: 1,
+  to: 1, 
+  last_page: 1,
+  per_page: 10,
+  data: [],
+});
+
+const scoreLoading = ref(false);
+
+// Score Fetch data
+const scorePages = computed(()=>Math.ceil(scoresData.value.total/scoresData.value.per_page))
+const fetchScoreParams = ref({
+  page: 1,
+  per_page: 10,
+})
+// Score Fetch function
+async function fetchScores(page = null) {
+  scoreLoading.value = true;
+  try {
+    if (typeof page === 'number') {
+      fetchScoreParams.value.page = page
+    }
+    const response = await Scores.list(fetchScoreParams.value);
+    scoresData.value = response.data;
+  } catch {
+    alert('Someting went wrong try again later');
+  }
+  scoreLoading.value = false;
+}
+
+// Score save data
+const scoreSaved = ref(false);
+const alias = ref('');
+// Score save function
+async function saveScore(errors: string[]) {
+  if (errors.length) return;
+
+  
+  scoreLoading.value = true;
+  try {
+    const data = {
+      alias: alias.value,
+      score: snake.value.length,
+    }
+    const response = await Scores.create(data);
+    if (response.status === 200) {
+      scoreSaved.value = true;
+      alias.value = '';
+    }
+  } catch {
+    alert('Someting went wrong try again later');
+  }
+  scoreLoading.value = false;
+} 
 </script>
 
 <template>
@@ -251,24 +318,59 @@ pauseGame(true);
         h-full w-full 
         flex flex-col items-center justify-center gap-5
       " 
-      @focus="boundsFocused = true, pauseGame(false)"
+      @focus="boundsFocused = !isSnakeDead, pauseGame(false)"
       @keydown="onKeypressHandler"
     > 
       
       <!-- Header -->
-      <div class="w-full flex items-center justify-center gap-10">
+      <div class="w-full flex items-center justify-between md:justify-center gap-5 md:gap-10">
         <h3 
-          class="text-center text-3xl text-primary-200  drop-shadow-[]" 
+          class="text-center text-lg md:text-3xl text-primary-200  drop-shadow-[]" 
           style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
         >
           Snake Game
         </h3>
-        <p class="text-white text-sm">
-          Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
-        </p>
-        <AppButton v-if="false" variant="outline" class="font-serif" @click="pauseGame(snakeMovement.isActive.value)">
-          {{ snakeMovement.isActive.value ? 'Pause' : 'Start' }}
-        </AppButton>
+        <div class="text-white text-sm flex flex-col md:flex-row items-center gap-2 gap-x-6">
+          <p>
+            Snake Length: <span class="ml-1 font-bold text-yellow-300">{{ score }}</span>
+          </p>
+          <AppModal @update:active="$event && fetchScores()" close-icon>
+            <template #trigger="{ toggleModal }">
+              <AppButton size="sm" @click="toggleModal">
+                View Scores
+              </AppButton>
+            </template>
+            
+            <h3 class="mb-5 text-center text-lg text-primary-300">HIGH SCORES</h3>
+            <div class="border border-secondary-500 w-[90vw] max-w-[300px] text-center">
+              <div class="p-1 bg-primary-500 grid grid-cols-2 gap-3">
+                <div>Name</div>
+                <div>Score</div>
+              </div>
+              <div class="p-1 flex flex-col gap-3">
+                <AppLoading v-if="scoreLoading" class="w-full h-full"></AppLoading>
+                <div
+                  v-else
+                  v-for="score in scoresData.data" 
+                  :key="score.id"
+                  class="grid grid-cols-2 gap-3"
+                >
+                  <div class="text-primary-500 font-bold">{{ score.alias }}</div>
+                  <div>{{ score.score }}</div>
+                </div>
+              </div>
+            </div>
+            <!-- Score Pagination -->
+            <div class="mt-3 flex justify-end"> 
+              <AppPagination
+                class="mx-auto block" 
+                :length="scorePages"
+                :model-value="fetchScoreParams.page"
+                @update:model-value="fetchScores($event)"
+              ></AppPagination>
+            </div>
+          </AppModal>
+        </div>
       </div>
 
       <!-- Snake Area -->
@@ -296,7 +398,7 @@ pauseGame(true);
           class="
             absolute top-0 left-0 
             backdrop-blur 
-            z-50 h-full 
+            z-20 h-full 
             w-full flex 
             flex-col 
             items-center 
@@ -319,20 +421,55 @@ pauseGame(true);
         class="
           absolute top-0 left-0 
           backdrop-blur-lg 
-          z-50 h-full w-full flex 
+          z-20 h-full w-full flex 
           flex-col 
           items-center 
           justify-center gap-3
           text-red-500
         "
       >
-        <h1 
-          class="text-5xl"
-          style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
-        >
-          Game Over
-        </h1>
-        <AppButton  @click="resetGame">Play Again</AppButton>
+        <div class="w-fit">
+          <div class="my-2 p-2 border bg-slate-900">
+            
+            <h1 
+              class="mb-10 mx-4 text-5xl"
+              style=" text-shadow: 1px 1px 1px #ff5555ee, -1px -1px 1px #ff5555ee, -1px 1px 1px #ff5555ee, 1px -1px 1px #ff5555ee, 1px 0px 20px hotpink"
+            >
+              Game Over
+            </h1>
+            
+            <div 
+              v-if="scoreSaved"
+              class="text-center text-lg text-success-400"
+            >
+              Score Saved!
+            </div>
+            <AppForm v-else @validate="saveScore">
+              <p class="text-lg text-white font-bold text-center">
+                <span>Score: </span> 
+                <span>{{  snake.length  }}</span>
+              </p>
+              <!-- Alias Input -->
+              <AppFormInput 
+                v-model="alias"
+                :disabled="scoreLoading"
+                label="Alias" 
+                placeholder="Enter Alias Here"
+                validations="required | maxLength(5)"
+                class="w-full"
+              ></AppFormInput>
+              <!-- submit Button -->
+              <AppButton 
+                :loading="scoreLoading"
+                variant="outline" 
+                class="mt-5 w-full" 
+                type="submit"
+              >Submit</AppButton>
+            </AppForm>
+            
+            <AppButton @click="resetGame" class="mt-5 w-full">Play Again</AppButton>
+          </div>
+        </div>
       </div>
 
         <!-- Snake Area -->

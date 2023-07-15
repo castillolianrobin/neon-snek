@@ -19,9 +19,9 @@ export interface TableResponse<T = {}> {
   to: number; 
   from: number; 
   total: number; 
-  perPage: number; 
-  lastPage: number; 
-  currentPage: number;
+  per_page: number; 
+  last_page: number; 
+  current_page: number;
 }
 
 export class CRUDService<Model = {}, CreateParams = Model> {
@@ -44,6 +44,6 @@ export class CRUDService<Model = {}, CreateParams = Model> {
   }
 
   delete(id: number) {
-    return axios.post<SuccessResponse>(`/${this.base}/${id}/delete`);
+    return axios.post<SuccessResponse>(`/${this.base}/${id}`, { _method: 'DELETE' });
   }
 }

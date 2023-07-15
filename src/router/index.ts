@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import SnakeGame from '@/views/SnakeGameView.vue';
 
 
 const router = createRouter({
@@ -7,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: SnakeGame  ,
+      component: ()=> import('@/views/SnakeGameView.vue')  ,
       meta: { layout: 'Default' },
     },
   ]
