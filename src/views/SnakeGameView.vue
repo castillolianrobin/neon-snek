@@ -282,7 +282,7 @@ async function saveScore(errors: string[]) {
   try {
     const data = {
       alias: alias.value,
-      score: snake.value.length,
+      score: score.value,
     }
     const response = await Scores.create(data);
     if (response.status === 200) {
