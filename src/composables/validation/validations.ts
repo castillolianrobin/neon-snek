@@ -100,7 +100,7 @@ export function minLength(count: number, name = ""): Validation {
 export function maxLength(count: number, name = ""): Validation {
   return (value, fieldName = name) => {
     return (
-      (value && value.length < count) ||
+      (value && value.length <= count) ||
       `${fieldName || "This"} field must not exceed ${count} characters long.`
     );
   };
