@@ -21,7 +21,9 @@ export default defineConfig({
       includeAssets: [
         '/favicon.ico',
         '/img/icons/android-chrome-192x192.png',
+        '/img/icons/pwa-192x192.png',
         '/img/icons/android-chrome-512x512.png',
+        '/img/icons/pwa-512x512.png',
       ],
       manifest: {
         name: 'Retro Snake',
@@ -31,10 +33,21 @@ export default defineConfig({
         background_color: '#71717a',
         display: 'standalone',
         orientation: 'portrait',
+        scope: '/',
         icons: [
           {
             src: '/img/icons/android-chrome-192x192.png',
             size: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: '/img/icons/pwa-192x192.png',
+            size: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/img/icons/pwa-512x512.png',
+            size: '512x512',
             type: 'image/png',
           },
           {
