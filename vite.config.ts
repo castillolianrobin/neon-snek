@@ -27,7 +27,7 @@ export default defineConfig({
       ],
       manifest: {
         name: 'Retro Snake',
-        short_name: 'snek2',
+        short_name: 'Retro Snek',
         description: 'Classic Snake game with retro neo theme',
         theme_color: '#ec4899',
         background_color: '#71717a',
@@ -37,35 +37,13 @@ export default defineConfig({
         icons: [
           {
             src: '/img/icons/android-chrome-192x192.png',
-            size: '192x192',
+            sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/img/icons/pwa-192x192.png',
-            size: '512x512',
+            src: '/img/icons/pwa-icon-512.png',
+            sizes: '512x512',
             type: 'image/png',
-          },
-          {
-            src: '/img/icons/pwa-512x512.png',
-            size: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/img/icons/android-chrome-512x512.png',
-            size: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/img/icons/android-chrome-512x512.png',
-            size: '512x512',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/img/icons/android-chrome-maskable-512x512.png',
-            size: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
           },
         ],
       } 
